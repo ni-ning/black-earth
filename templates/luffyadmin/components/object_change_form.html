@@ -1,0 +1,110 @@
+{% load luffyadmin_tags %}
+
+<div class="container" style="width: 1100px">
+        <ol class="breadcrumb">
+            <li><a href="/luffyadmin/">Home</a></li>
+            <li ><a href="/luffyadmin/{{ app_name }}/">{{ app_name }}</a></li>
+            <li ><a href="/luffyadmin/{{ app_name }}/{{ model_name }}/">{{ model_name }}</a></li>
+            <li class="active">{% if  form_obj.instance.id %}{{ form_obj.instance }}{% else %}添加{{ model_name }}{% endif %}</li>
+        </ol>
+
+        <form class="form-horizontal" method="post">{% csrf_token %}
+            {% for field in form_obj %}
+                <div class="form-group">
+                    <label class="col-sm-2 control-label">
+                        <!-- 必填名称加粗 -->
+                        {% if field.field.required %}
+                        {{ field.name }}
+                        {% else %}
+                            <span style="font-weight: normal">{{ field.name }}</span>
+                        {% endif %}
+                    </label>
+
+                    <!-- form表单自动生成标签 神奇的filed -->
+                    <div class="col-sm-10">
+                        {% if field.name in admin_class.filter_horizontal %}
+                            <!-- 左右 多选下拉框 -->
+                            <div>
+                            {% get_selected_m2m_objects form_obj field.name as selected_m2m_objects %}
+                            {% get_m2m_objects admin_class field.name selected_m2m_objects as m2m_objects  %}
+                                <!-- 左下拉框 未选择 -->
+
+                                <div class="col-lg-5">
+                                    <input oninput="FuzzySearch(this)" type="search" class="form-control">
+                                    <select  id="{{ field.name }}_left"  multiple class="form-control">
+                                    {% for obj in m2m_objects %}
+                                        <option value="{{ obj.id }}" ondblclick="toRight(this,'{{ field.name }}');">{{ obj }}</option>
+                                    {% endfor %}
+                                </select>
+                                </div>
+
+                                <!-- 有下拉框 已选择 -->
+                                <div class="col-lg-5">
+                                    <select id="{{ field.name }}_right" name="{{ field.name }}" ele-type="right-select-ele" multiple class="form-control">
+                                    {% for obj in selected_m2m_objects %}
+                                        <option  value="{{ obj.id }}" ondblclick="toLeft(this,'{{ field.name }}');">{{ obj }}</option>
+                                    {% endfor %}
+                                    </select>
+                                </div>
+                            </div>
+
+                        {% else %}
+                        <!-- 正常标签处理 -->
+                        {{ field }}
+                        {% endif %}
+                    </div>
+
+                </div>
+            {% endfor %}
+            <div class="form-group">
+                <div class="row">
+                    <div class="col-lg-2 col-lg-offset-2">
+                        <a class="btn btn-danger">Delete</a>
+                    </div>
+                    <div class="col-lg-2 col-lg-offset-6">
+                        <input type="submit" onclick="SelectAllm2mElements()" class="btn btn-primary" value="Save">
+                    </div>
+                </div>
+            </div>
+        </form>
+    </div>
+
+<script>
+
+    function SelectAllm2mElements() {
+        $("select[ele-type='right-select-ele'] option").prop("selected",true);
+    }
+
+    function FuzzySearch(self) {
+        var select_ele = $(self).next();
+        console.log($(self).val());
+        var search_text = $(self).val();
+        $(select_ele).children().each(function () {
+            //console.log($(this).text());
+            if ($(this).text().indexOf(search_text) == -1){ // 没有匹配就隐藏
+                console.log('not match',$(this).text());
+                $(this).addClass('hidden');
+
+            }else {
+                $(this).removeClass('hidden');
+            }
+        })
+
+    }
+
+    function toRight(ths, name) {
+        var rightName = '#' + name + '_right';
+        $(ths).appendTo($(rightName));
+
+        doubleName = "toLeft(this,'" + name +"');";
+        $(ths).attr("ondblclick", doubleName);
+    }
+
+    function toLeft(ths, name) {
+        var leftName = '#' + name + '_left';
+        $(ths).appendTo($(leftName));
+
+        doubleName = "toRight(this,'" + name +"');";
+        $(ths).attr("ondblclick", doubleName);
+    }
+</script>

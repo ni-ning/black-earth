@@ -1,0 +1,44 @@
+{% extends "base.html" %}
+{% load luffyadmin_tags %}
+
+
+{% block header %}
+<style>
+    .app-name{
+        color: white;
+        font-size: 20px;
+        background-color: #c2c2c2;
+        margin-left: 10px;
+    }
+    .app-list a{
+        color: #337ab7;
+        font-size: 14px;
+    }
+</style>
+{% endblock header %}
+
+
+{% block content %}
+    <!-- 面包屑 -->
+    <ol class="breadcrumb">
+        <li><a href="/luffyadmin/">Home</a></li>
+    </ol>
+
+    <!-- APP列表 -->
+    <div  class="main-frame">
+        {% for app_name, talbe_list_dict in site.registered_admins.items %}
+        <div>
+            <table class="table">
+                <tr><td class="app-name" >{{ app_name }}</td></tr>
+                {% for model_name, admin_class in talbe_list_dict.items %}
+                    <tr>
+                        <td class="app-list">
+                            <a href="{{ app_name }}/{{ model_name }}">{% get_model_verbose_name admin_class %}</a>
+                        </td>
+                    </tr>
+                {% endfor %}
+            </table>
+        </div>
+    {% endfor %}
+    </div>
+{% endblock content %}

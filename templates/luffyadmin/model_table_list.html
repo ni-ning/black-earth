@@ -1,0 +1,72 @@
+{% extends "base.html" %}
+{% load luffyadmin_tags %}
+
+
+{% block content %}
+    <!-- 面包屑 -->
+    <ol class="breadcrumb">
+              <li><a href="/luffyadmin/">Home</a></li>
+              <li ><a href="/luffyadmin/{{ app_name }}/">{{ app_name }}</a></li>
+              <li ><a href="/luffyadmin/{{ app_name }}/{{ model_name }}/">{{ model_name }}</a></li>
+    </ol>
+
+    <div class="main-frame">
+         <!-- 检索条件 -->
+        <div class="col-lg-2 col-lg-offset-10">
+                <a href="add/" class="btn btn-primary">Add {% get_model_verbose_name admin_class %}</a>
+            </div>
+        {% if admin_class.list_filter or admin_class.search_fields %}
+            <form>
+            {% for filter_column in admin_class.list_filter %}
+                <div class="col-lg-2">
+                <label>{{ filter_column }}</label>
+                {% build_filter_ele filter_column admin_class filter_conditions %}
+                </div>
+            {% endfor %}
+
+                <div class="col-lg-2" style="margin-top: 25px">
+                    <input type="text" name="_query" value="{{ query }}"  placeholder="请输入内容" autocomplete="off" class="form-control">
+                </div>
+                <div class="col-lg-2" style="margin-top: 25px">
+                    <button class="btn btn-success">过滤</button>
+                </div>
+        </form>
+        {% endif %}
+
+        <!-- 列表 -->
+        <table class="table table-hover">
+            <thead>
+                <tr>
+                <th><input type="checkbox"></th>
+                    {% if not admin_class.list_display %}
+                    <th>{{ model_name }}</th>
+                    {% else %}
+                        {% for column in admin_class.list_display %}
+                            <th>{{ column }}</th>
+                        {% endfor %}
+                    {% endif %}
+                <th><span>操作</span></th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for row in querysets %}
+                    {% build_table_row row admin_class %}
+                {% endfor %}
+            </tbody>
+
+        </table>
+
+        <!-- 分页导航 -->
+        <div style="text-align: center">
+            <div class="page_nav" style="">
+            <nav aria-label="...">
+                <ul class="pagination">
+                  {{ page_info.page_str|safe }}
+                </ul>
+            </nav>
+        </div>
+        </div>
+    </div>
+
+{% endblock content %}
+
