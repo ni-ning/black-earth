@@ -82,7 +82,14 @@ def table_obj_add(request, app_name,model_name, no_render=False):
                 if form_obj.is_valid():
                     form_obj.save()
 
-                    return redirect(request.path.rstrip("add/"))
+                    if no_render:
+                        redirect_url_list = request.path.split('/')
+                        redirect_url = '/'.join(redirect_url_list[1:4])
+                        redirect_url = '/' + redirect_url + '/'
+                        print(redirect_url)
+                        return redirect_url
+                    else:
+                        return redirect(request.path.rstrip("add/"))
 
     if no_render:  # 被其它函数调用，只返回数据
         return locals()
@@ -130,10 +137,17 @@ def table_object_del(request, app_name, model_name, object_id, no_render=False):
         if model_name in site.registered_admins[app_name]:
             admin_class = site.registered_admins[app_name][model_name]
             obj = admin_class.model.objects.filter(id=object_id).first()
-            print(request.path)
+            redirect_url_list = request.path.split('/')
+            redirect_url = '/'.join(redirect_url_list[1:4])
+            redirect_url = '/' + redirect_url + '/'
+            print(redirect_url)
+
             if request.method == "POST":
                 obj.delete()
-                return redirect("/luffyadmin/{app}/{model}/".format(app=app_name, model=model_name))
+                if no_render:
+                    return redirect_url
+                else:
+                    return redirect(redirect_url)
 
     if no_render:  # 被其它函数调用，只返回数据
         return locals()

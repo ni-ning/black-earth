@@ -9,7 +9,6 @@ from app import models
 from luffyAdmin import views as admin_views
 
 
-
 class BranchSerializer(serializers.ModelSerializer):
     class Meta:
         model = models.Branch
@@ -67,7 +66,7 @@ def customer_list(request):
     return render(request, 'app/customer/customer_list.html', view_data)
 
 
-def customer_obj_change(request, object_id):
+def customer_obj_change(request, app_name, model_name, object_id):
     app_name = 'app'
     model_name = 'customer'
     view_data = admin_views.table_obj_change(request, app_name,model_name,object_id, no_render=True)
@@ -75,18 +74,28 @@ def customer_obj_change(request, object_id):
     return render(request, 'app/customer/customer_object_change.html', view_data)
 
 
-def customer_obj_add(request):
+def customer_obj_add(request, app_name, model_name):
     app_name = 'app'
     model_name = 'customer'
-    view_data = admin_views.table_obj_add(request,app_name,model_name,  no_render=True)
-    return render(request, 'app/customer/customer_object_add.html', view_data)
+
+    if request.method == "POST":
+        redirect_url = admin_views.table_obj_add(request, app_name, model_name, no_render=True)
+        return redirect(redirect_url)
+    else:
+        view_data = admin_views.table_obj_add(request, app_name, model_name, no_render=True)
+        return render(request, 'app/customer/customer_object_add.html', view_data)
 
 
 def customer_object_del(request, app_name, model_name, object_id):
     app_name = 'app'
     model_name = 'customer'
-    view_data = admin_views.table_object_del(request, app_name, model_name, object_id, no_render=True)
-    return render(request, 'app/customer/customer_object_delete.html', view_data)
+
+    if request.method == "POST":
+        redirect_url = admin_views.table_object_del(request, app_name, model_name, object_id, no_render=True)
+        return redirect(redirect_url)
+    else:
+        view_data = admin_views.table_object_del(request, app_name, model_name, object_id, no_render=True)
+        return render(request, 'app/customer/customer_object_delete.html', view_data)
 
 
 def customer_followup_list(request):

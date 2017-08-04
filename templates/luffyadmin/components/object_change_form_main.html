@@ -70,7 +70,9 @@
                 {% if form_obj.instance.id %}
 
 {#                <a href="{% url 'object_del' app_name model_name form_obj.instance.id  %}" class="btn btn-danger">Delete</a>#}
-                <a href="{% url 'object_del' app_name model_name form_obj.instance.id  %}" class="btn btn-danger">Delete</a>
+{#                    {% get_delete_url request form_obj.instance.id %}#}
+
+                <a href="{% get_delete_url request form_obj.instance.id %}" class="btn btn-danger">Delete</a>
 
                 {% endif %}
             </div>

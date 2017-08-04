@@ -4,6 +4,7 @@
 # email:nining1314@gmail.com
 from django.template import Library
 from django.utils.safestring import mark_safe
+import os
 
 register = Library()
 
@@ -214,3 +215,11 @@ def get_readonly_field_val(field_name,obj_instance):
         m2m_obj = getattr(obj_instance,field_name)
         return ",".join([ i.__str__() for i in m2m_obj.all()])
     return getattr(obj_instance,field_name)
+
+
+@register.simple_tag
+def get_delete_url(request, nid):
+    redirect_url_list = request.path.split('/')
+    redirect_url = '/'.join(redirect_url_list[1:4])
+    redirect_url = '/' + redirect_url + '/' + str(nid) + '/' + 'delete'+  '/'
+    return redirect_url
