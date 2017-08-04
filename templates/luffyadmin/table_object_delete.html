@@ -1,0 +1,22 @@
+{% extends 'base.html' %}
+{% load luffyadmin_tags %}
+
+{% block content %}
+
+<div class="container-fluid">
+    <div class="alert alert-success" role="alert">确定要删除吗？</div>
+
+    <!-- 展示要删除的内容-->
+    {% object_delete obj %}
+
+    <!-- 删除操作动作表单-->
+    <form method="post">{% csrf_token %}
+        <div class="row">
+            <div class="col-lg-1"><input type="submit" class="btn btn-danger" value="确性"></div>
+            <div class="col-lg-11"><a class="btn btn-default">取消</a></div>
+        </div>
+    </form>
+
+</div>
+
+{% endblock content %}

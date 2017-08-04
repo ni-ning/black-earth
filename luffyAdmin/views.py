@@ -21,11 +21,24 @@ def model_table_list(request, app_name, model_name):
     """
     if model_name in site.registered_admins[app_name]:
         admin_class = site.registered_admins[app_name][model_name]
-        querysets, filter_conditions, page_info,query = get_filter_objs(request, admin_class)
+        if request.method == "POST":  # admin_actoin
+            print(request.POST)
+            # 获取要执行的函数名
+            action_func_name = request.POST.get('admin_action')
+            action_func = getattr(admin_class, action_func_name)
+
+            # 获取执行函数参数所需的对象结合
+            selected_obj_ids = request.POST.getlist("_selected_obj")
+            selected_objs = admin_class.model.objects.filter(id__in=selected_obj_ids)
+            action_res = action_func(action_func, request, selected_objs)
+
+            return redirect(request.path)
+        else:
+            querysets, filter_conditions, page_info,query = get_filter_objs(request, admin_class)
     return render(request, 'luffyadmin/model_table_list.html', locals())
 
 
-def table_obj_change(request,app_name,model_name,object_id):
+def table_obj_change(request, app_name, model_name, object_id):
     """
     from luffyAdmin import forms
     from app import models
@@ -37,7 +50,7 @@ def table_obj_change(request,app_name,model_name,object_id):
         if model_name in site.registered_admins[app_name]:
             admin_class = site.registered_admins[app_name][model_name]
             object = admin_class.model.objects.get(id=object_id)
-            form = forms.create_dynamic_modelform(admin_class.model)
+            form = forms.create_dynamic_modelform(admin_class.model, admin_class=admin_class, form_create=False)
             if request.method == "GET":
                 form_obj = form(instance=object)
             elif request.method == "POST":
@@ -54,7 +67,7 @@ def table_obj_add(request,app_name,model_name):
         if model_name in site.registered_admins[app_name]:
             admin_class = site.registered_admins[app_name][model_name]
 
-            form = forms.create_dynamic_modelform(admin_class.model)
+            form = forms.create_dynamic_modelform(admin_class.model, admin_class=admin_class, form_create=True)
             if request.method == "GET":
                 form_obj = form()
             elif request.method == "POST":
@@ -100,3 +113,16 @@ def get_filter_objs(request, admin_class):
     query_sets = admin_class.model.objects.filter(q1, **filter_conditions)[page_info.start():page_info.end()]
 
     return query_sets, filter_conditions, page_info, query
+
+
+def table_object_del(request, app_name, model_name, object_id):
+    if app_name in site.registered_admins:
+        if model_name in site.registered_admins[app_name]:
+            admin_class = site.registered_admins[app_name][model_name]
+            obj = admin_class.model.objects.filter(id=object_id).first()
+            if request.method == "POST":
+                obj.delete()
+                return redirect("/luffyadmin/{app}/{model}/".format(app=app_name, model=model_name))
+
+    return render(request, 'luffyadmin/table_object_delete.html', locals())
+

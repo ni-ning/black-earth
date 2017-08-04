@@ -20,8 +20,8 @@ class Tag(models.Model):
 
 
 class Customer(models.Model):
-    name = models.CharField(max_length=64, blank=True, null=True)
-    qq = models.CharField(max_length=64, blank=True, null=True, unique=True)
+    name = models.CharField(verbose_name=u'名称', max_length=64, blank=True, null=True)
+    qq = models.CharField(verbose_name='QQ',max_length=64, blank=True, null=True, unique=True)
     weixin = models.CharField(max_length=64, blank=True, null=True, unique=True)
     phone = models.BigIntegerField(blank=True, null=True, unique=True)
     email = models.EmailField(blank=True, null=True)
@@ -34,10 +34,13 @@ class Customer(models.Model):
         (1, '已退费'),
         (2, '未报名')
     )
-    status = models.SmallIntegerField(u'来源',choices=status_choices, default=2)
+    status = models.SmallIntegerField(u'状态', choices=status_choices, default=2)
     tags = models.ManyToManyField('Tag', blank=True)
     consultant = models.ForeignKey('Account', related_name='my_consultant')
     date = models.DateTimeField(auto_now_add=True)
+
+    source.verbose_name = u'来源'
+    consultant.verbose_name = u'咨询老师'
 
     def __str__(self):
         return self.name
@@ -83,6 +86,8 @@ class CustomerFollowUp(models.Model):
     )
     status = models.IntegerField(choices=status_choices)
 
+    def __str__(self):
+        return self.customer.name
 
 class Course(models.Model):
     name = models.CharField(max_length=128, unique=True)
@@ -203,6 +208,10 @@ class Role(models.Model):
     def __str__(self):
         return self.name
 
+    class Meta:
+        verbose_name = "角色菜单控制"
+        verbose_name_plural = "角色菜单控制"
+
 
 class Menu(models.Model):
     """一级菜单"""
@@ -220,7 +229,8 @@ class Menu(models.Model):
 
     class Meta:
         unique_together = ('url', 'url_type')
-
+        verbose_name = "一级菜单"
+        verbose_name_plural = "一级菜单"
 
 class SubMenu(models.Model):
     """二级菜单"""
@@ -239,6 +249,8 @@ class SubMenu(models.Model):
 
     class Meta:
         unique_together = ('url', 'url_type')
+        verbose_name = "二级菜单"
+        verbose_name_plural = "二级菜单"
 
 
 class Account(models.Model):

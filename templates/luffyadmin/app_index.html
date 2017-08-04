@@ -24,21 +24,37 @@
         <li><a href="/luffyadmin/">Home</a></li>
     </ol>
 
-    <!-- APP列表 -->
+    <!-- APP列表
     <div  class="main-frame">
         {% for app_name, talbe_list_dict in site.registered_admins.items %}
-        <div>
-            <table class="table">
-                <tr><td class="app-name" >{{ app_name }}</td></tr>
-                {% for model_name, admin_class in talbe_list_dict.items %}
-                    <tr>
-                        <td class="app-list">
-                            <a href="{{ app_name }}/{{ model_name }}">{% get_model_verbose_name admin_class %}</a>
-                        </td>
-                    </tr>
-                {% endfor %}
-            </table>
-        </div>
-    {% endfor %}
+            <div>
+                <table class="table">
+                    <tr><td class="app-name" >{{ app_name }}</td></tr>
+                    {% for model_name, admin_class in talbe_list_dict.items %}
+                        <tr>
+                            <td class="app-list">
+                                <a href="{{ app_name }}/{{ model_name }}">{% get_model_verbose_name admin_class %}</a>
+                            </td>
+                        </tr>
+                    {% endfor %}
+                </table>
+            </div>
+        {% endfor %}
+    </div>  -->
+
+    <div class="panel panel-success">
+            {% for app_name, talbe_list_dict in site.registered_admins.items %}
+                <div class="panel-heading">{{ app_name }}</div>
+                <table class="table">
+                    {% for model_name, admin_class in talbe_list_dict.items %}
+                        <tr>
+                            <td class="app-list">
+                                <a href="{{ app_name }}/{{ model_name }}">{% get_model_verbose_name admin_class %}</a>
+                            </td>
+                        </tr>
+                    {% endfor %}
+                </table>
+            {% endfor %}
     </div>
+
 {% endblock content %}

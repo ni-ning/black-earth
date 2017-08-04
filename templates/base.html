@@ -55,11 +55,11 @@
         </div>
         <div id="navbar" class="navbar-collapse collapse">
           <ul class="nav navbar-nav navbar-right">
-            <li><a href="#" style="color: white">控制面板</a></li>
-            <li><a href="#" style="color: white">设置</a></li>
-            <li><a href="#" style="color: white">个人信息</a></li>
+            <li><a href="/luffyadmin/" style="color: rgba(255,255,255,0.75)">控制面板</a></li>
+            <li><a href="#" style="color: rgba(255,255,255,0.75)">设置</a></li>
+            <li><a href="#" style="color: rgba(255,255,255,0.75)">个人信息</a></li>
             <li class="dropdown">
-              <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false" style="color: white">{{ request.user.name }} <span class="caret"></span></a>
+              <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false" style="color: rgba(255,255,255,0.75)">{{ request.user.name }} <span class="caret"></span></a>
               <ul class="dropdown-menu">
                 <li><a href="/logout/">Logout</a></li>
               </ul>
@@ -76,31 +76,51 @@
     <div class="container-fluid">
       <div class="row">
         <div class="col-sm-3 col-md-2 sidebar">
-          <ul class="nav nav-sidebar">
-            <li class="active ">
-                <a href="#" class="header">一级菜单</a>
-                <ul class="nav hidden">
-                    <li class="subMenu"><a href="#" style="padding-left: 30px" >二级菜单1</a></li>
-                    <li class="subMenu"><a href="#" style="padding-left: 30px">二级菜单2</a></li>
-                    <li class="subMenu"><a href="#"  style="padding-left: 30px">二级菜单3</a></li>
+{#          <ul class="nav nav-sidebar">#}
+{#            <li class="active">#}
+{#                <a href="#" class="header">一级菜单</a>#}
+{#                <ul class="nav hidden">#}
+{#                    <li class="subMenu"><a href="#" style="padding-left: 30px" >二级菜单1</a></li>#}
+{#                    <li class="subMenu"><a href="#" style="padding-left: 30px">二级菜单2</a></li>#}
+{#                    <li class="subMenu"><a href="#"  style="padding-left: 30px">二级菜单3</a></li>#}
+{#                </ul>#}
+{#            </li>#}
+{#          </ul>#}
+{#          <ul class="nav nav-sidebar">#}
+{#            <li class="active">#}
+{#                <a href="#"  class="header">一级菜单</a>#}
+{#                <ul class="nav hidden">#}
+{#                    <li class="subMenu"><a href="#" style="padding-left: 30px">二级菜单</a></li>#}
+{#                    <li class="subMenu"><a href="#" style="padding-left: 30px">二级菜单</a></li>#}
+{#                    <li class="subMenu"><a href="#" style="padding-left: 30px">二级菜单</a></li>#}
+{#                </ul>#}
+{#            </li>#}
+{#          </ul>#}
+{#          <ul class="nav nav-sidebar">#}
+{#            <li class="active">#}
+{#                <a href="/luffyadmin/"  class="header">定制框架</a>#}
+{#            </li>#}
+{#          </ul>#}
+
+            {%  for menu in  request.user.role.menus.all %}
+                <ul class="nav nav-sidebar">
+                    <li class="active">
+                         <a href="{{ menu.url }}" class="header">{{ menu.name }} </a>
+                    {% if menu.submenu_set.all %}
+                        <ul class="nav hidden">
+                            {% for submenu in menu.submenu_set.all %}
+                            <li class="subMenu" >
+                                <a href="{% if submenu.url_type == 0 %}{{ submenu.url }}{% else %}{{ submenu.url }}{% endif %}">{{ submenu.name }}</a>
+                            </li>
+                            {% endfor %}
+                        </ul>
+                    {% endif %}
+                    </li>
                 </ul>
-            </li>
-          </ul>
-          <ul class="nav nav-sidebar">
-            <li class="active">
-                <a href="#"  class="header">一级菜单</a>
-                <ul class="nav hidden">
-                    <li class="subMenu"><a href="#" style="padding-left: 30px">二级菜单</a></li>
-                    <li class="subMenu"><a href="#" style="padding-left: 30px">二级菜单</a></li>
-                    <li class="subMenu"><a href="#" style="padding-left: 30px">二级菜单</a></li>
-                </ul>
-            </li>
-          </ul>
-          <ul class="nav nav-sidebar">
-            <li class="active">
-                <a href="/luffyadmin/"  class="header">定制框架</a>
-            </li>
-          </ul>
+
+            {% endfor %}
+
+
         </div>
 
         <div class="col-sm-9 col-sm-offset-3 col-md-10 col-md-offset-2 main">
@@ -124,6 +144,7 @@
     <script src="/static/js/holder.min.js"></script>
     <!-- IE10 viewport hack for Surface/desktop Windows 8 bug -->
     <script src="/static/js/ie10-viewport-bug-workaround.js"></script>
+    <script src="/static/layer/layer.js"></script>
 
     <!-- 左侧菜单js -->
     <script>

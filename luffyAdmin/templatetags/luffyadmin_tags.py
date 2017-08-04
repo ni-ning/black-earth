@@ -95,7 +95,7 @@ def build_table_row(row, admin_class):
     query_obj._meta.get_field('name').choices -->  []
     小结：灵活输出choices整数值对应的名称  get_status_display()
     """
-    row_ele = "<tr><td><input type='checkbox'></td>"
+    row_ele = "<tr><td><input class='row-obj' name='_selected_obj' value='{obj_id}' type='checkbox'></td>".format(obj_id=row.id)
     if admin_class.list_display:
         for index, column_name in enumerate(admin_class.list_display):
             field_obj = row._meta.get_field(column_name)
@@ -113,7 +113,7 @@ def build_table_row(row, admin_class):
     else:
         td_ele = "<td><a href='{obj_id}/change/'>{obj_str}</a></td>".format(obj_id=row.id, obj_str=row)
         row_ele += td_ele
-    row_ele += "<td><button type='button' class='btn btn-primary btn-xs'>修改</button> <button type='button' class='btn btn-danger btn-xs'>删除</button><td></tr>"
+    row_ele += "<td><a type='button' class='btn btn-primary btn-xs' href='{obj_id}/change/'>修改</a> <button type='button' class='btn btn-danger btn-xs'>删除</button><td></tr>".format(obj_id=row.id)
     return mark_safe(row_ele)
 
 
@@ -141,3 +141,76 @@ def get_m2m_objects(admin_class, field_name, selected_objs):
     field_obj = getattr(admin_class.model,field_name)
     all_objects = field_obj.rel.to.objects.all()
     return set(all_objects) - set(selected_objs)
+
+
+@register.simple_tag
+def get_short_description(admin_class, func_name):
+    func = getattr(admin_class, func_name)
+    if hasattr(func, 'short_description'):
+        return getattr(func, 'short_description')
+    else:
+        return func_name
+
+
+@register.simple_tag
+def get_field_verbose_name(admin_class, column):
+    return admin_class.model._meta.get_field(column).verbose_name
+
+
+@register.simple_tag
+def object_delete(obj, recursive=False):
+    """
+    1. 通过obj._meta.related_objects 拿到关联obj的所有关联对象关系列表
+        (<ManyToOneRel: app.paymentrecord>,
+        <ManyToOneRel: app.customerfollowup>,
+        <OneToOneRel: app.account1>)
+    2. 循环关联对象关系表，调用 reverse_lookup_key=i.get_accessor_name() 拿到反向查询的字段名(字符串)，如 'customerfollowup_set'
+    3. 反射obj取得所有所有关联对象集合 query_set=getattr(obj, reverse_lookup_key).all()
+    4. 所有关联对象集合 query_set元素重复1,2,3步骤，直到没有更深入的关联关系为止
+
+    另外：多对多采用 obj._meta.local_many_to_many
+    """
+    if not recursive: # 首次调用
+        ele = "<ul><li>{object_name}".format(object_name=obj)
+    else:
+        ele = "<ul>"
+
+    local_m2m = obj._meta.local_many_to_many
+    for m2m_field in local_m2m:
+        m2m_objs = getattr(obj, m2m_field.name).all()
+        for m2m_obj in m2m_objs:
+            ele += "<li>{obj_name}:{m2m_name}</li>".format(obj_name=m2m_field.name, m2m_name=m2m_obj)
+
+    for i in obj._meta.related_objects: # step 1
+        try:
+            reverse_lookup_key = i.get_accessor_name()  # step 2
+            query_set = getattr(obj, reverse_lookup_key).all() # step 3
+            print('--->', reverse_lookup_key, query_set)
+            child_ele = ""
+            for o in query_set:
+                child_ele += "<li>{model_verbose_name}:<a>{obj_name}</a></li>".format(
+                    model_verbose_name=o._meta.verbose_name,
+                    obj_name=o)
+                if o._meta.related_objects:
+                    child_ele += object_delete(o, recursive=True)
+            child_ele += ""
+            ele += child_ele
+        except Exception as e:
+            print(e)
+    ele += "</ul>"
+    return mark_safe(ele)
+
+
+@register.simple_tag
+def get_readonly_field_val(field_name,obj_instance):
+    """
+    1.根据obj_instance反射出field_name 的值
+    :param field_name:
+    :param obj_instance:
+    :return:
+    """
+    field_type =  obj_instance._meta.get_field(field_name).get_internal_type()
+    if field_type == "ManyToManyField":
+        m2m_obj = getattr(obj_instance,field_name)
+        return ",".join([ i.__str__() for i in m2m_obj.all()])
+    return getattr(obj_instance,field_name)

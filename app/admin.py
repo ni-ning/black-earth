@@ -21,6 +21,7 @@ admin.site.register(models.Role)
 admin.site.register(models.Menu)
 admin.site.register(models.SubMenu)
 admin.site.register(models.Tag)
+admin.site.register(models.CustomerFollowUp)
 
 
 

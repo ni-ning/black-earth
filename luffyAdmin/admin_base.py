@@ -10,6 +10,14 @@ class BaseAdmin(object):
     list_per_page = 10
     search_fields = []
     filter_horizontal = []
+    default_actions = ["delete_obj"]
+    actions = []
+    readonly_fields = []
+
+    def delete_obj(self, request, querysets):
+        querysets.delete()
+
+    delete_obj.short_description = '批量删除'
 
 
 class AdminSite(object):
