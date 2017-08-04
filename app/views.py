@@ -1,3 +1,4 @@
+from django.shortcuts import render, redirect
 from django.http import HttpResponse, JsonResponse
 from rest_framework import serializers
 from rest_framework import status
@@ -5,6 +6,8 @@ from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from rest_framework.parsers import JSONParser
 from app import models
+from luffyAdmin import views as admin_views
+
 
 
 class BranchSerializer(serializers.ModelSerializer):
@@ -53,3 +56,42 @@ def branch_detail(request, pk):
     elif request.method == "DELETE":
         branch_obj.delete()
         return HttpResponse(status=204)
+
+
+def customer_list(request):
+
+    app_name = 'app'
+    model_name = 'customer'
+    view_data = admin_views.model_table_list(request, app_name=app_name, model_name=model_name, no_render=True)
+    print("view data", view_data)
+    return render(request, 'app/customer/customer_list.html', view_data)
+
+
+def customer_obj_change(request, object_id):
+    app_name = 'app'
+    model_name = 'customer'
+    view_data = admin_views.table_obj_change(request, app_name,model_name,object_id, no_render=True)
+
+    return render(request, 'app/customer/customer_object_change.html', view_data)
+
+
+def customer_obj_add(request):
+    app_name = 'app'
+    model_name = 'customer'
+    view_data = admin_views.table_obj_add(request,app_name,model_name,  no_render=True)
+    return render(request, 'app/customer/customer_object_add.html', view_data)
+
+
+def customer_object_del(request, app_name, model_name, object_id):
+    app_name = 'app'
+    model_name = 'customer'
+    view_data = admin_views.table_object_del(request, app_name, model_name, object_id, no_render=True)
+    return render(request, 'app/customer/customer_object_delete.html', view_data)
+
+
+def customer_followup_list(request):
+    app_name = 'app'
+    model_name = 'customerfollowup'
+    view_data = admin_views.model_table_list(request, app_name=app_name, model_name=model_name, no_render=True)
+    print("view data", view_data)
+    return render(request, 'app/customer_followup/customer_followup_list.html', view_data)

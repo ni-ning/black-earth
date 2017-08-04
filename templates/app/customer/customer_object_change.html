@@ -1,0 +1,15 @@
+{% extends 'base.html' %}
+{% load luffyadmin_tags %}
+
+{% block content %}
+<div class="container" style="width: 1100px">
+        <ol class="breadcrumb">
+            <li ><a href="/{{ app_name }}/customer_list/">客户库</a></li>
+            <li class="active">{% if  form_obj.instance.id %}{{ form_obj.instance }}{% else %}添加{{ model_name }}{% endif %}</li>
+        </ol>
+
+        {% include 'luffyadmin/components/object_change_form_main.html' %}
+
+    </div>
+
+{% endblock content %}

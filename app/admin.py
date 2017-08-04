@@ -9,6 +9,10 @@ class CustomerAdmin(admin.ModelAdmin):
     list_per_page = 2
     filter_horizontal = ['tags', 'consult_courses']
 
+
+class CustomerFollowUpAdmin(admin.ModelAdmin):
+    list_display = ('id', 'customer', 'content', 'status')
+
 admin.site.register(models.Source)
 admin.site.register(models.Branch)
 admin.site.register(models.Course)
@@ -21,7 +25,7 @@ admin.site.register(models.Role)
 admin.site.register(models.Menu)
 admin.site.register(models.SubMenu)
 admin.site.register(models.Tag)
-admin.site.register(models.CustomerFollowUp)
+admin.site.register(models.CustomerFollowUp, CustomerFollowUpAdmin)
 
 
 

@@ -33,9 +33,14 @@ class RoleAdmin(BaseAdmin):
     list_display = ['name', 'menus']
     filter_horizontal = ['menus']
 
+
+class CustomerFollowUpAdmin(BaseAdmin):
+    list_display = ('id', 'customer', 'content', 'status')
+
 site.register(models.Customer, CustomerAdmin)
 site.register(models.ClassList)
 site.register(models.Course, CourseAdmin)
 site.register(models.Role, RoleAdmin)
 site.register(models.Menu)
 site.register(models.SubMenu)
+site.register(models.CustomerFollowUp, CustomerFollowUpAdmin)

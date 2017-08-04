@@ -13,7 +13,7 @@ def app_index(request):
     return render(request, 'luffyadmin/app_index.html', {'site': site})
 
 
-def model_table_list(request, app_name, model_name):
+def model_table_list(request, app_name, model_name, no_render=False):
     """
     1. 已知跨模块数据site.registered_admins
     2. 根据 app_name, model_name,拿到表对象的admin_class
@@ -35,10 +35,14 @@ def model_table_list(request, app_name, model_name):
             return redirect(request.path)
         else:
             querysets, filter_conditions, page_info,query = get_filter_objs(request, admin_class)
-    return render(request, 'luffyadmin/model_table_list.html', locals())
+
+    if no_render: # 被其它函数调用，只返回数据
+        return locals()
+    else:
+        return render(request, 'luffyadmin/model_table_list.html', locals())
 
 
-def table_obj_change(request, app_name, model_name, object_id):
+def table_obj_change(request, app_name, model_name, object_id, no_render=False):
     """
     from luffyAdmin import forms
     from app import models
@@ -58,10 +62,13 @@ def table_obj_change(request, app_name, model_name, object_id):
                 if form_obj.is_valid():
                     form_obj.save()
 
-    return render(request, 'luffyadmin/table_object_change.html', locals())
+    if no_render:  # 被其它函数调用，只返回数据
+        return locals()
+    else:
+        return render(request, 'luffyadmin/table_object_change.html', locals())
 
 
-def table_obj_add(request,app_name,model_name):
+def table_obj_add(request, app_name,model_name, no_render=False):
     print("requestpath", request.path)
     if app_name in site.registered_admins:
         if model_name in site.registered_admins[app_name]:
@@ -77,7 +84,10 @@ def table_obj_add(request,app_name,model_name):
 
                     return redirect(request.path.rstrip("add/"))
 
-    return render(request, 'luffyadmin/table_object_add.html', locals())
+    if no_render:  # 被其它函数调用，只返回数据
+        return locals()
+    else:
+        return render(request, 'luffyadmin/table_object_add.html', locals())
 
 
 def get_filter_objs(request, admin_class):
@@ -115,14 +125,18 @@ def get_filter_objs(request, admin_class):
     return query_sets, filter_conditions, page_info, query
 
 
-def table_object_del(request, app_name, model_name, object_id):
+def table_object_del(request, app_name, model_name, object_id, no_render=False):
     if app_name in site.registered_admins:
         if model_name in site.registered_admins[app_name]:
             admin_class = site.registered_admins[app_name][model_name]
             obj = admin_class.model.objects.filter(id=object_id).first()
+            print(request.path)
             if request.method == "POST":
                 obj.delete()
                 return redirect("/luffyadmin/{app}/{model}/".format(app=app_name, model=model_name))
 
-    return render(request, 'luffyadmin/table_object_delete.html', locals())
+    if no_render:  # 被其它函数调用，只返回数据
+        return locals()
+    else:
+        return render(request, 'luffyadmin/table_object_delete.html', locals())
 

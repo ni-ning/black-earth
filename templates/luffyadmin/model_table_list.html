@@ -10,118 +10,119 @@
               <li ><a href="/luffyadmin/{{ app_name }}/{{ model_name }}/">{{ model_name }}</a></li>
     </ol>
 
-    <div class="main-frame">
+    {% include 'luffyadmin/components/model_obj_list.html' %}
 
-        <div class="row">
-            <!-- 检索条件 -->
-            <div class="col-lg-2 col-lg-offset-10">
-                    <a href="add/" class="btn btn-primary">Add {% get_model_verbose_name admin_class %}</a>
-                </div>
-            {% if admin_class.list_filter or admin_class.search_fields %}
-                <form>
-                {% for filter_column in admin_class.list_filter %}
-                    <div class="col-lg-2">
-                    <label>{% get_field_verbose_name admin_class filter_column %}</label>
-                    {% build_filter_ele filter_column admin_class filter_conditions %}
-                    </div>
-                {% endfor %}
-
-                    <div class="col-lg-2" style="margin-top: 25px">
-                        <input type="text" name="_query" value="{{ query }}"  placeholder="请输入内容" autocomplete="off" class="form-control">
-                    </div>
-                    <div class="col-lg-2" style="margin-top: 25px">
-                        <button class="btn btn-success">过滤</button>
-                    </div>
-            </form>
-            {% endif %}
-        </div>
-        <br/>
-        <form method="post" onsubmit="return FormVerification(this)">{% csrf_token %}
-            <div class="row">
-            <!-- 操作action下拉选项 -->
-                <div class="col-lg-2">
-                <select class="form-control" name="admin_action">
-                        <option value="">-----</option>
-                        {% for opt in admin_class.default_actions %}
-                            <option value="{{ opt }}">{%  get_short_description  admin_class opt %}</option>
-                        {% endfor %}
-                        {% for opt in admin_class.actions %}
-                            <option value="{{ opt }}">{%  get_short_description  admin_class opt %}</option>
-                        {% endfor %}
-                        </select>
-
-                </div>
-                <div class="col-lg-1">
-                    <input type="submit" class="btn btn-primary" value="Go">
-                </div>
-            </div>
-            <!-- action操作选择的对象列表 --> <!-- 列表 -->
-            <table class="table table-hover">
-            <thead>
-                <tr>
-                <th><input type="checkbox" onclick="checkAll(this)"></th>
-                    {% if not admin_class.list_display %}
-                    <th>{{ model_name }}</th>
-                    {% else %}
-                        {% for column in admin_class.list_display %}
-                            <th>{% get_field_verbose_name admin_class column %}</th>
-                        {% endfor %}
-                    {% endif %}
-                <th><span>操作</span></th>
-                </tr>
-            </thead>
-            <tbody>
-                <!-- templatetags 循环生成每行的标签 -->
-                {% for row in querysets %}
-                    {% build_table_row row admin_class %}
-                {% endfor %}
-            </tbody>
-
-        </table>
-
-        </form>
-
-        <!-- 分页导航 -->
-        <div style="text-align: center">
-            <div class="page_nav" style="">
-            <nav aria-label="...">
-                <ul class="pagination">
-                  {{ page_info.page_str|safe }}
-                </ul>
-            </nav>
-        </div>
-        </div>
-    </div>
-
-    <script>
-    function checkAll(ths) {
-        console.log('ddddd');
-        if($(ths).prop('checked')){
-            $('table .row-obj').prop('checked', true)
-        }else{
-            $('table .row-obj').prop('checked', false)
-        }
-    }
-
-    function FormVerification(ths) {
-        var action_val = $("select[name='admin_action']").val();
-        console.log(action_val);
-        if(!action_val){
-            layer.open({
-                title:'提示',
-                content: '必须选择类型',
-                icon: 2
-            });
-            return false
-        }
-
-        if($("table .row-obj:checked").length == 0){
-            layer.alert('必须选择对象');
-            return false
-        }
-        return true
-    }
-    </script>
+{#    <div class="main-frame">#}
+{##}
+{#        <div class="row">#}
+{#            <!-- 检索条件 -->#}
+{#            <div class="col-lg-2 col-lg-offset-10">#}
+{#                    <a href="add/" class="btn btn-primary">Add {% get_model_verbose_name admin_class %}</a>#}
+{#                </div>#}
+{#            {% if admin_class.list_filter or admin_class.search_fields %}#}
+{#                <form>#}
+{#                {% for filter_column in admin_class.list_filter %}#}
+{#                    <div class="col-lg-2">#}
+{#                    <label>{% get_field_verbose_name admin_class filter_column %}</label>#}
+{#                    {% build_filter_ele filter_column admin_class filter_conditions %}#}
+{#                    </div>#}
+{#                {% endfor %}#}
+{##}
+{#                    <div class="col-lg-2" style="margin-top: 25px">#}
+{#                        <input type="text" name="_query" value="{{ query }}"  placeholder="请输入内容" autocomplete="off" class="form-control">#}
+{#                    </div>#}
+{#                    <div class="col-lg-2" style="margin-top: 25px">#}
+{#                        <button class="btn btn-success">过滤</button>#}
+{#                    </div>#}
+{#            </form>#}
+{#            {% endif %}#}
+{#        </div>#}
+{#        <br/>#}
+{#        <form method="post" onsubmit="return FormVerification(this)">{% csrf_token %}#}
+{#            <div class="row">#}
+{#            <!-- 操作action下拉选项 -->#}
+{#                <div class="col-lg-2">#}
+{#                <select class="form-control" name="admin_action">#}
+{#                        <option value="">-----</option>#}
+{#                        {% for opt in admin_class.default_actions %}#}
+{#                            <option value="{{ opt }}">{%  get_short_description  admin_class opt %}</option>#}
+{#                        {% endfor %}#}
+{#                        {% for opt in admin_class.actions %}#}
+{#                            <option value="{{ opt }}">{%  get_short_description  admin_class opt %}</option>#}
+{#                        {% endfor %}#}
+{#                        </select>#}
+{##}
+{#                </div>#}
+{#                <div class="col-lg-1">#}
+{#                    <input type="submit" class="btn btn-primary" value="Go">#}
+{#                </div>#}
+{#            </div>#}
+{#            <!-- action操作选择的对象列表 --> <!-- 列表 -->#}
+{#            <table class="table table-hover">#}
+{#            <thead>#}
+{#                <tr>#}
+{#                <th><input type="checkbox" onclick="checkAll(this)"></th>#}
+{#                    {% if not admin_class.list_display %}#}
+{#                    <th>{{ model_name }}</th>#}
+{#                    {% else %}#}
+{#                        {% for column in admin_class.list_display %}#}
+{#                            <th>{% get_field_verbose_name admin_class column %}</th>#}
+{#                        {% endfor %}#}
+{#                    {% endif %}#}
+{#                <th><span>操作</span></th>#}
+{#                </tr>#}
+{#            </thead>#}
+{#            <tbody>#}
+{#                <!-- templatetags 循环生成每行的标签 -->#}
+{#                {% for row in querysets %}#}
+{#                    {% build_table_row row admin_class %}#}
+{#                {% endfor %}#}
+{#            </tbody>#}
+{##}
+{#        </table>#}
+{##}
+{#        </form>#}
+{##}
+{#        <!-- 分页导航 -->#}
+{#        <div style="text-align: center">#}
+{#            <div class="page_nav" style="">#}
+{#            <nav aria-label="...">#}
+{#                <ul class="pagination">#}
+{#                  {{ page_info.page_str|safe }}#}
+{#                </ul>#}
+{#            </nav>#}
+{#        </div>#}
+{#        </div>#}
+{#    </div>#}
+{##}
+{#    <script>#}
+{#    function checkAll(ths) {#}
+{#        console.log('ddddd');#}
+{#        if($(ths).prop('checked')){#}
+{#            $('table .row-obj').prop('checked', true)#}
+{#        }else{#}
+{#            $('table .row-obj').prop('checked', false)#}
+{#        }#}
+{#    }#}
+{#    function FormVerification(ths) {#}
+{#        var action_val = $("select[name='admin_action']").val();#}
+{#        console.log(action_val);#}
+{#        if(!action_val){#}
+{#            layer.open({#}
+{#                title:'提示',#}
+{#                content: '必须选择类型',#}
+{#                icon: 2#}
+{#            });#}
+{#            return false#}
+{#        }#}
+{##}
+{#        if($("table .row-obj:checked").length == 0){#}
+{#            layer.alert('必须选择对象');#}
+{#            return false#}
+{#        }#}
+{#        return true#}
+{#    }#}
+{#    </script>#}
 
 
 {% endblock content %}

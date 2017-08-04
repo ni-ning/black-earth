@@ -1,0 +1,12 @@
+{% extends "base.html" %}
+
+{% block content %}
+    <!-- 面包屑 -->
+    <ol class="breadcrumb">
+              <li ><a href="/{{ app_name }}/customer_followup_list/">跟进客户记录</a></li>
+    </ol>
+
+    {% include 'luffyadmin/components/model_obj_list.html' %}
+
+
+{% endblock content %}
